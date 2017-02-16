@@ -6,7 +6,7 @@ from email.mime.base import MIMEBase
 
 try:
     from urllib.error import HTTPError  # pragma: no cover
-except ImportError: # pragma: no cover
+except ImportError:  # pragma: no cover
     from urllib2 import HTTPError  # pragma: no cover
 
 try:
@@ -35,6 +35,7 @@ class SendGridBackend(BaseEmailBackend):
     '''
     SendGrid Web API Backend
     '''
+
     def __init__(self, fail_silently=False, **kwargs):
         super(SendGridBackend, self).__init__(
             fail_silently=fail_silently, **kwargs)
@@ -75,6 +76,12 @@ class SendGridBackend(BaseEmailBackend):
             from_name = None
         mail.set_from(Email(from_email, from_name))
         mail.set_subject(email.subject)
+
+        if email.reply_to:
+            if isinstance(email.reply_to, str):
+                mail.set_reply_to(Email(email.reply_to))
+            else:
+                mail.set_reply_to(Email(email.reply_to[0]))
 
         personalization = Personalization()
         for e in email.to:
